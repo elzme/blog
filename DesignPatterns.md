@@ -1,11 +1,11 @@
 ##Design Patterns Save the Day
-Oftentimes while writing software, we'll come upon a class in our system that does the thing that we're trying to implement...*almost*. It's basic algorithm behaves the same way, but the specifics of each step (of the algorithm) may be different. Our first thought may be create a new class for our new functionality, which duplicates a lot of the code that we already have. This approach is certainly not [DRY](http://en.wikipedia.org/wiki/Don't_repeat_yourself), and it just doesn't feel right.
+Oftentimes while writing software, we'll find an existing class in our system that almost does the exact thing that we're trying to implement...*almost*. It's basic algorithm behaves the same way, but the specifics of each step (of the algorithm) may be different. Our first thought may be to create a new class for our new functionality, which duplicates a lot of the code that we already have. This approach certainly isn't [DRY](http://en.wikipedia.org/wiki/Don't_repeat_yourself), and it just doesn't feel right.
 
 For example, let's say that we want to write a program that allows our users to play either Tic Tac Toe or Chess. We create our Tic Tac Toe game, and it works just great. But as we're ramping up to start writing the Chess class, we realize that though the specific rules of these two games are very different, the fundamental **Game Loop** that drives each is the same:
 
-1. We **set up the game** by creating a game board and assigning each player a pieces (either X's and O's or black and white).
+1. We **set up the game** by creating a game board and assigning each player a piece (either X's and O's or black and white).
 
-2. We allow the first **player to take a turn**.
+2. We allow the first player to **take a turn**.
 
 3. We **switch to the other player**, and allow them to take a turn as well.
 
@@ -24,7 +24,7 @@ class Game
     set_up_game
     current_player = 0
     until game_over?
-      player_turn(current_player)
+      take_a_turn(current_player)
       current_player = (current_player + 1) % 2 #this switches players
     end
     display_the_winner
@@ -32,8 +32,7 @@ class Game
 end
 ```
 
-Then, we can create our ```TicTacToe``` and ```Chess``` classes, both of which inherit from ```Game```. In the Template Method, the base class acts as an *abstract class*. Which means, that though it mentions our methods: ```set_up_game```, ```game_over?```, ```player_turn``` and ```display_the_winner```, it doesn't actually define them. This job is left up to each of the subclasses:
-
+Then, we can create our ```TicTacToe``` and ```Chess``` classes, both of which inherit from ```Game```. In the Template Method, the base class acts as an *abstract class*. Which means, that though it mentions our methods: ```set_up_game```, ```game_over?```, ```take_a_turn``` and ```display_the_winner```, it doesn't actually define them. This job is left up to each of the subclasses to define the specific of its methods:
 ```
 class TicTacToe < Game
   def set_up_game
@@ -41,7 +40,7 @@ class TicTacToe < Game
     #assign an X or O for each player
   end
 
-  def player_turn(current_player)
+  def take_a_turn(current_player)
     #get the current player's move
   end
 
@@ -62,7 +61,7 @@ class Chess < Game
     #assign a color piece for each player
   end
 
-  def player_turn(current_player)
+  def take_a_turn(current_player)
     #get the current player's move
   end
 
@@ -87,15 +86,15 @@ And then call our play_the_game method on our new game objects:
 ttt_game.play_the_game
 chess_game.play_the_game
 ```
-By using the Template Method, we've eliminated the need for duplication as well as created a nice structure that allows us extend this program easily. For example, if we want to add some other games to our program, like Connect Four we can just create a ```ConnectFour``` class that also inherits from ```Game```!
+By using the Template Method, we've eliminated the need for duplication as well as created a nice structure that allows us extend this program easily. For example, if we want to add another game to our program, like Connect Four, we can just create a ```ConnectFour``` class that also inherits from ```Game```!
 
 
 -----------------------------
 
 
-Now, let's focus our attention specifically on the Tic Tac Toe game. Let's say that if the user is playing against the computer, that they can choose to either play against an unbeatable computer (that uses the minimax algorithm), or a beatable computer that just randomly chooses its next move.
+Now, let's focus our attention specifically on the Tic Tac Toe game. Let's say that when our user is playing against the computer, they can choose to either play against an unbeatable computer (that uses the minimax algorithm), or a beatable computer (that just randomly chooses its next move).
 
-We could potentially just include all of this logic right in a ```ComputerPlayer``` class, by using an if/elsif statement to determine how the computer chooses its next move:
+We could potentially include all of this logic right in the ```ComputerPlayer``` class, by using an if/elsif statement to determine how the computer chooses its next move:
 ```
 class ComputerPlayer
   def make_a_move(strategy)
@@ -115,11 +114,11 @@ class ComputerPlayer
   end
 end
 ```
-And this method may work just fine for now... but what if we decide that we want to add several new strategies for the computer to use when taking a turn. Perhaps we want the computer to always lose, or maybe we want to create a brand new unbeatable algorithm. If this were the case, we would not only have to add these new strategy functions, but also change our current ```get_move``` logic - which breaks the Open-Closed Principle. So, instead, let's try the Strategy Method.
+And this method may work just fine for now... but what if we decide that we want to add several new strategies for the computer to use when taking a turn. Perhaps we want the computer to always lose, or maybe we want to create a brand new unbeatable algorithm. If this were the case, we would not only have to add these new strategy methods, but also change our current ```make_a_move``` logic to account for the new strategies - which breaks the Open-Closed Principle. So, instead, let's try the Strategy Pattern.
 
 ####The Strategy Pattern
 
-The Strategy Pattern allows us to select how we would like an algorithm to behave, at runtime. Rather than hardcoding the behavior into our code. In other words, we're able to create a "family of algorithms" that can be used interchangabley, depending on the scenario.
+The Strategy Pattern allows us to wait until runtime to choose how we would like an algorithm to behave, rather than hardcoding the behavior into our program. In other words, we're able to create a "family of algorithms" that can be used interchangabley, depending on the scenario.
 
 In our example, we want to be able to choose which strategy our ```ComputerPlayer``` in going to use when making a move. Our "family of algorithms" will include a ```MinimaxStrategy``` and a ```RandomStrategy```. We'll want to be able to plug them into the ```ComputerPlayer``` in the same way, so they must all have the same interface with the ```ComputerPlayer```.
 
@@ -137,7 +136,7 @@ class ComputerPlayer
   end
 end
 ```
-Now, the only thing that is required of the strategy objects (```MinimaxStrategy``` and ```RandomStrategy```) is for them to both have a ```get_move``` method defined within them, which encapuslates the specific alogrithm for that strategy:
+Now, the only thing that is required of the strategy objects (```MinimaxStrategy``` and ```RandomStrategy```) is for them to both have a ```get_move``` method defined within them, which encapuslates the specific alogrithm for their strategy:
 
 ```
 class MinimaxStrategy
@@ -149,7 +148,7 @@ end
 ```
 class RandomStrategy
   def get_move
-    #gets a random move
+    #code that gets a random move
   end
 end
 ```
@@ -164,7 +163,7 @@ random_computer_player = ComputerPlayer.new(RandomStrategy.new)
 random_computer_player.make_a_move
 ```
 
-The benefit with this pattern comes in how easy it to extend the ```ComputerPlayer``` behavior: we can easily new strategy objects to our system. And, if we ever want to alter the computer's behavior, we can just pass that new strategy to our ```ComputerPlayer```. This change is completely encapsulated in the specific strategy objects, and the ```ComputerPlayer``` doesn't need to know a thing!
+The benefit with this pattern comes in how simple it to extend the ```ComputerPlayer``` behavior: we can easily add a new strategy object to our system. And, if we ever want to alter the ```ComputerPlayer``` behavior, we can just pass that new strategy in. This change is completely encapsulated in the specific strategy objects, and the ```ComputerPlayer``` doesn't need to know a thing!
 
 
 -----------------------
