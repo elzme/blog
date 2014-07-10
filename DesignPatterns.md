@@ -163,7 +163,7 @@ random_computer_player = ComputerPlayer.new(RandomStrategy.new)
 random_computer_player.make_a_move
 ```
 
-The benefit of this pattern is in how simple it to extend the ```ComputerPlayer```. We can easily add a new strategy object to our system, and if we ever want to alter the ```ComputerPlayer``` behavior, we can just pass that new strategy in. This change is completely encapsulated in the specific strategy object, and the ```ComputerPlayer``` doesn't need to know a thing!
+The benefit of this pattern is in how simple it is to extend the ```ComputerPlayer```. We can easily add a new strategy object to our system, and if we ever want to alter the ```ComputerPlayer``` behavior, we can just pass that new strategy in. This change is completely encapsulated in the specific strategy object, and the ```ComputerPlayer``` doesn't need to know a thing!
 
 
 -----------------------
