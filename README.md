@@ -1,4 +1,5 @@
-Oftentimes while writing software, we'll come upon a class in our system that does exactly the thing that we're trying to implement...*almost*. It's basic algorithm behaves the same way, but the specifics of each step (of the algorithm) may be different. Our first thought may be create a new class for our new functionality, which duplicates a lot of the code that we already have. This approach is certainly not [DRY](http://en.wikipedia.org/wiki/Don't_repeat_yourself), and it just doesn't feel right.
+##Design Patterns Save the Day
+Oftentimes while writing software, we'll come upon a class in our system that does the thing that we're trying to implement...*almost*. It's basic algorithm behaves the same way, but the specifics of each step (of the algorithm) may be different. Our first thought may be create a new class for our new functionality, which duplicates a lot of the code that we already have. This approach is certainly not [DRY](http://en.wikipedia.org/wiki/Don't_repeat_yourself), and it just doesn't feel right.
 
 For example, let's say that we want to write a program that allows our users to play either Tic Tac Toe or Chess. We create our Tic Tac Toe game, and it works just great. But as we're ramping up to start writing the Chess class, we realize that though the specific rules of these two games are very different, the fundamental **Game Loop** that drives each is the same:
 
@@ -13,7 +14,6 @@ For example, let's say that we want to write a program that allows our users to 
 Instead of rewriting all of that code for each game, wouldn't it be great if we could just reuse the general algorithm, and change the specific details of each game? We can, meet the **Template Method**.
 
 ####The Template Method Pattern
-
 
 The goal of the Template Method is to extract all of the generic parts of our algorithm, and put them into a base class. Then, we can inherit this behavior into our subclasses, and override the more specific implementation details as needed.
 
@@ -117,7 +117,7 @@ end
 ```
 And this method may work just fine for now... but what if we decide that we want to add several new strategies for the computer to use when taking a turn. Perhaps we want the computer to always lose, or maybe we want to create a brand new unbeatable algorithm. If this were the case, we would not only have to add these new strategy functions, but also change our current ```get_move``` logic - which breaks the Open-Closed Principle. So, instead, let's try the Strategy Method.
 
-####Strategy Pattern
+####The Strategy Pattern
 
 The Strategy Pattern allows us to select how we would like an algorithm to behave, at runtime. Rather than hardcoding the behavior into our code. In other words, we're able to create a "family of algorithms" that can be used interchangabley, depending on the scenario.
 
